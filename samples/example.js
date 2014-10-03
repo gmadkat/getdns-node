@@ -18,7 +18,7 @@ var callback = function(err, result) {
             process.stdout.write("Error: no result\n");
         } else {
             for ( var index in result.replies_tree) {
-                format(JSON.stringify(result.replies_tree[index]));
+                process.stdout.write(JSON.stringify(result.replies_tree[index], null, 2));
             } 
         }
         // A third argument is also supplied as the transaction id
@@ -48,38 +48,3 @@ var transactionId = context.lookup("getdnsapi.net", getdns.RRTYPE_A, callback);
 //context.getAddress("cnn.com", { return_both_v4_and_v6 : true }, callback);
 
 
-// helper to format the output to a prettier printed output.
-var format = function( buffer) {
-
-    if (buffer.substring(0,5) === "HTTP/") {
-        var index = buffer.indexOf('\r\n\r\n');
-        var sepLen = 4;
-        if (index == -1) {
-            index = buffer.indexOf('\n\n');
-            sepLen = 2;
-        }
-        if (index != -1) {
-            process.stdout.write(buffer.slice(0, index+sepLen));
-            buffer = buffer.substring(index+sepLen);
-        }
-    }
-    if (buffer[0] === '{' || buffer[0] === '[') {
-        try {
-            process.stdout.write(JSON.stringify(JSON.parse(buffer), null, 2));
-            process.stdout.write('\n');
-        } catch(ex) {
-            process.stdout.write(buffer);
-            if (buffer[buffer.length-1] !== "\n") {
-                process.stdout.write('\n');
-            }
-        }
-    } else {
-        process.stdout.write(buffer);
-        if (buffer[buffer.length-1] !== "\n") {
-            process.stdout.write('\n');
-        }
-    }
-
-};
-
-    

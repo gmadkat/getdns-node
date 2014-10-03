@@ -18,12 +18,11 @@ var context = getdns.createContext(options);
 
 // response util - get a secure response of a particular type
 var getFirstSecureResponse = function(err, result, type) {
-   if (err) {
+    if (err) {
         console.log("An error occurred.. " + JSON.stringify(err));
         return err;
-   } 
+    } 
 
-    console.log("tree.. " + format(JSON.stringify(result)));
     var replies_tree = result.replies_tree;
 
     // validate that there is a reply with an answer
@@ -63,42 +62,8 @@ getResponse(function(err, result) {
     if (err) {
         console.log("An error occurred.. " + JSON.stringify(err));
     } else {
-        console.log("Response: " +  JSON.stringify(result));
-        format(JSON.stringify(result));
+        console.log("Response: " +  JSON.stringify(result, null, 2));
     }
     context.destroy();
 });
 
-// helper to format the output to a prettier printed output.
-var format = function( buffer) {
-
-    if (buffer.substring(0,5) === "HTTP/") {
-        var index = buffer.indexOf('\r\n\r\n');
-        var sepLen = 4;
-        if (index == -1) {
-            index = buffer.indexOf('\n\n');
-            sepLen = 2;
-        }
-        if (index != -1) {
-            process.stdout.write(buffer.slice(0, index+sepLen));
-            buffer = buffer.substring(index+sepLen);
-        }
-    }
-    if (buffer[0] === '{' || buffer[0] === '[') {
-        try {
-            process.stdout.write(JSON.stringify(JSON.parse(buffer), null, 2));
-            process.stdout.write('\n');
-        } catch(ex) {
-            process.stdout.write(buffer);
-            if (buffer[buffer.length-1] !== "\n") {
-                process.stdout.write('\n');
-            }
-        }
-    } else {
-        process.stdout.write(buffer);
-        if (buffer[buffer.length-1] !== "\n") {
-            process.stdout.write('\n');
-        }
-    }
-
-};
